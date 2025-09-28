@@ -1,14 +1,19 @@
+# Modules
 from datetime import datetime
 import requests
 from io import StringIO
 import pandas as pd
+# configs
+comm_list = ["TXO", "TEO", "TFO", "TGO"]
 
-def taifex_options_list(date_str: str, Type):
+# Utils
+def taifex_options_list(date_str: str, Type, commodity_id = "TXO"):
     """
     取得台指選擇權某日某交易時段之所有可交易的合約
     input:
         date_str: str, 格式為 'YYYY-MM-DD'
         Type: int, 0 (一般交易時段); 1 (盤後交易時段)
+        commodity_id: str, 商品種類 (TXO: 台指期選; TEO: 電子期選; TFO: 金融期選; TGO: 黃金期選)
     output:
         df: Dataframe, 包含該日該時段所有可供交易之台指選擇權標的
         contract_list: list, 包含該日該時段所有可供交易之台指選擇權標的(僅月份)
@@ -18,7 +23,7 @@ def taifex_options_list(date_str: str, Type):
     payload = {'queryType': '2',
                'marketCode': str(Type),
                'dateaddcnt': '',
-               'commodity_id': 'TXO',
+               'commodity_id': commodity_id,
                'queryDate': date.strftime('%Y/%m/%d')} # 資訊封包
     res = requests.post(url, data=payload)
     if '查無資料' in res.text:
@@ -33,3 +38,10 @@ def taifex_options_list(date_str: str, Type):
     except Exception as e:
         print("爬蟲失敗:", e)
         return None
+
+# Exe. Zone
+if __name__ == "__main__":
+    for i in comm_list:
+        df = taifex_options_list("2022-01-07", 0, commodity_id=i)
+        print(df.head())
+    pass
