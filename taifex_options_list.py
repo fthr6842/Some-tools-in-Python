@@ -34,7 +34,8 @@ def taifex_options_list(date_str: str, Type, commodity_id = "TXO"):
         df = pd.concat(tables, axis=0, ignore_index=True)
         df = df.iloc[:, 0:3]
         df = df.iloc[:-1]
-        return df
+        contract_list = df["到期月份 (週別)"].unique()
+        return df, contract_list
     except Exception as e:
         print("爬蟲失敗:", e)
         return None
@@ -42,6 +43,7 @@ def taifex_options_list(date_str: str, Type, commodity_id = "TXO"):
 # Exe. Zone
 if __name__ == "__main__":
     for i in comm_list:
-        df = taifex_options_list("2022-01-07", 0, commodity_id=i)
+        df, contract_list = taifex_options_list("2022-01-07", 0, commodity_id=i)
         print(df.head())
+        print(contract_list)
     pass
